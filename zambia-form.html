@@ -1,0 +1,430 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Solon Foundation – Zambia Schools Grants Data</title>
+<style>
+  :root{
+    --bg:#f6f5f1; --card:#ffffff; --ink:#1d2321; --muted:#5d6763; --line:#dcdcd5;
+    --accent:#1f6f4a; --accent-ink:#ffffff; --accent-soft:#e6f1eb;
+    --danger:#b3261e; --danger-soft:#fbeaea; --radius:12px;
+  }
+  *{box-sizing:border-box}
+  html{-webkit-text-size-adjust:100%}
+  body{margin:0;background:var(--bg);color:var(--ink);
+       font:16px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,Helvetica,Arial,sans-serif}
+  .wrap{max-width:720px;margin:0 auto;padding:16px 16px 64px}
+  header.top{padding:24px 0 8px}
+  .org{font-size:13px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--accent)}
+  h1{font-size:24px;line-height:1.25;margin:4px 0 8px}
+  .intro{color:var(--muted);margin:0 0 8px}
+  .card{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);padding:20px;margin:16px 0}
+  .card h2{font-size:17px;margin:0 0 4px;display:flex;gap:10px;align-items:baseline}
+  .card h2 .n{color:var(--accent);font-variant-numeric:tabular-nums}
+  .card .help{color:var(--muted);font-size:14px;margin:0 0 12px}
+  label{display:block;font-weight:600;font-size:15px;margin:14px 0 6px}
+  label .opt{font-weight:400;color:var(--muted);font-size:13px}
+  input[type=text],input[type=tel],input[type=email],input[type=number],select,textarea{
+    width:100%;padding:12px;border:1px solid var(--line);border-radius:8px;background:#fff;
+    font:inherit;color:inherit;min-height:46px}
+  textarea{min-height:90px;resize:vertical}
+  input:focus,select:focus,textarea:focus{outline:2px solid var(--accent);outline-offset:1px;border-color:var(--accent)}
+  .grid{display:grid;gap:0 12px;grid-template-columns:repeat(3,1fr)}
+  .grid2{display:grid;gap:0 12px;grid-template-columns:repeat(2,1fr)}
+  @media (max-width:520px){.grid{grid-template-columns:1fr 1fr}.grid .full-sm{grid-column:1/-1}.grid2{grid-template-columns:1fr}}
+  .grid>.field,.grid2>.field{display:flex;flex-direction:column}
+  .grid>.field>label,.grid2>.field>label{flex:1 0 auto;display:flex;align-items:flex-end;flex-wrap:wrap;gap:0 4px}
+  input[readonly]{background:var(--accent-soft);font-weight:700}
+  .radios{display:flex;gap:10px;flex-wrap:wrap}
+  .radios label{margin:0;font-weight:500;display:flex;align-items:center;gap:8px;
+    border:1px solid var(--line);border-radius:8px;padding:10px 16px;cursor:pointer;min-height:46px}
+  .radios input{width:18px;height:18px;accent-color:var(--accent)}
+  .radios label:has(input:checked){border-color:var(--accent);background:var(--accent-soft)}
+  .photos{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:8px}
+  .photo{border:1.5px dashed var(--line);border-radius:10px;aspect-ratio:4/3;position:relative;overflow:hidden;
+    display:flex;align-items:center;justify-content:center;text-align:center;color:var(--muted);font-size:14px;cursor:pointer;background:#fbfbf9}
+  .photo img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .photo input{position:absolute;inset:0;opacity:0;cursor:pointer}
+  .photo .rm{position:absolute;top:6px;right:6px;z-index:2;background:rgba(0,0,0,.65);color:#fff;border:0;border-radius:999px;
+    width:30px;height:30px;font-size:18px;line-height:30px;cursor:pointer;display:none}
+  .photo.has .rm{display:block}
+  .photo.has{border-style:solid;border-color:var(--accent)}
+  .grant{border:1px solid var(--line);border-radius:10px;padding:4px 14px 14px;margin:12px 0;background:#fcfcfa}
+  .grant-head{display:flex;justify-content:space-between;align-items:center;margin-top:10px}
+  .grant-head strong{font-size:15px}
+  .link-btn{background:none;border:0;color:var(--danger);font:inherit;font-size:14px;cursor:pointer;padding:6px}
+  .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid var(--accent);
+    background:#fff;color:var(--accent);font:inherit;font-weight:600;padding:12px 18px;cursor:pointer;min-height:48px}
+  .btn.primary{background:var(--accent);color:var(--accent-ink);width:100%;font-size:17px}
+  .btn:disabled{opacity:.6;cursor:not-allowed}
+  .err{color:var(--danger);font-size:14px;margin-top:6px;display:none}
+  .invalid input,.invalid select,.invalid .photo{border-color:var(--danger)}
+  .invalid .err{display:block}
+  .banner{border-radius:10px;padding:14px 16px;margin:16px 0;display:none}
+  .banner.error{display:block;background:var(--danger-soft);color:var(--danger);border:1px solid #f1c5c2}
+  .banner.info{display:block;background:var(--accent-soft);color:var(--accent);border:1px solid #c6e0d2}
+  .done{text-align:center;padding:40px 20px}
+  .done .ref{font-family:ui-monospace,Menlo,Consolas,monospace;background:var(--accent-soft);padding:4px 10px;border-radius:6px}
+  .hp{position:absolute;left:-9999px;width:1px;height:1px;overflow:hidden}
+  .small{font-size:13px;color:var(--muted)}
+  [hidden]{display:none!important}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="top">
+    <div class="org">Solon Foundation</div>
+    <h1>Zambia Schools Grants Data</h1>
+    <p class="intro">Please complete one form per school. It takes about 10 minutes. Fields marked * are required. Your answers are saved on this device as you type, so you can come back if you are interrupted.</p>
+  </header>
+
+  <div id="draftBanner" class="banner info" hidden>
+    A saved draft was restored. <button type="button" class="link-btn" id="clearDraft" style="color:inherit;text-decoration:underline">Start a new form instead</button>
+  </div>
+
+  <form id="form" novalidate>
+    <!-- honeypot: humans never see this -->
+    <div class="hp" aria-hidden="true"><label>Website <input type="text" name="website" tabindex="-1" autocomplete="off"></label></div>
+
+    <section class="card">
+      <h2><span class="n">1</span> Name of school</h2>
+      <div class="field"><label for="schoolName">School name *</label>
+        <input type="text" id="schoolName" name="schoolName" required>
+        <div class="err">Please enter the school name.</div></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">2</span> Area</h2>
+      <div class="field"><label for="area">Area *</label>
+        <input type="text" id="area" name="area" required placeholder="e.g. zone, village or district">
+        <div class="err">Please enter the area.</div></div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">3</span> Pictures of the school</h2>
+      <p class="help">Upload the best two pictures of the school, taken from a distance so the buildings are visible. Photos are reduced in size automatically before sending.</p>
+      <div class="field" id="photoField">
+        <div class="photos">
+          <div class="photo" data-i="0"><span>Tap to add photo 1 *</span>
+            <input type="file" accept="image/*" aria-label="Photo 1"><button type="button" class="rm" aria-label="Remove photo 1">×</button></div>
+          <div class="photo" data-i="1"><span>Tap to add photo 2 *</span>
+            <input type="file" accept="image/*" aria-label="Photo 2"><button type="button" class="rm" aria-label="Remove photo 2">×</button></div>
+        </div>
+        <div class="err">Please add two photos of the school.</div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">4</span> Enrolment</h2>
+      <div class="grid">
+        <div class="field"><label for="girls">Girls *</label>
+          <input type="number" id="girls" name="girls" inputmode="numeric" min="0" step="1" required>
+          <div class="err">Enter a whole number.</div></div>
+        <div class="field"><label for="boys">Boys *</label>
+          <input type="number" id="boys" name="boys" inputmode="numeric" min="0" step="1" required>
+          <div class="err">Enter a whole number.</div></div>
+        <div class="field full-sm"><label for="total">Total</label>
+          <input type="number" id="total" name="total" readonly tabindex="-1"></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">5–7</span> Staff and buildings</h2>
+      <div class="grid">
+        <div class="field full-sm"><label for="teachers">5. Number of teachers *</label>
+          <input type="number" id="teachers" name="teachers" inputmode="numeric" min="0" step="1" required>
+          <div class="err">Enter a whole number.</div></div>
+        <div class="field"><label for="classrooms">6. Number of classrooms *</label>
+          <input type="number" id="classrooms" name="classrooms" inputmode="numeric" min="0" step="1" required>
+          <div class="err">Enter a whole number.</div></div>
+        <div class="field"><label for="houses">7. Teachers' houses *</label>
+          <input type="number" id="houses" name="houses" inputmode="numeric" min="0" step="1" required>
+          <div class="err">Enter a whole number.</div></div>
+      </div>
+    </section>
+
+    <section class="card">
+      <h2><span class="n">8</span> Assistance received from Solon Foundation</h2>
+      <div class="field" id="assistField">
+        <label>Has this school received assistance from Solon Foundation? *</label>
+        <div class="radios">
+          <label><input type="radio" name="assistance" value="Yes" required> Yes</label>
+          <label><input type="radio" name="assistance" value="No"> No</label>
+        </div>
+        <div class="err">Please choose Yes or No.</div>
+      </div>
+    </section>
+
+    <section class="card" id="grantsCard" hidden>
+      <h2><span class="n">9</span> Grants received</h2>
+      <p class="help">Add one entry for each grant or project, and choose the currency the amounts are in.</p>
+      <div id="grants"></div>
+      <button type="button" class="btn" id="addGrant">+ Add another grant</button>
+    </section>
+
+    <section class="card">
+      <h2>Other comments <span class="opt" style="font-size:13px;font-weight:400;color:var(--muted)">(optional)</span></h2>
+      <textarea id="comments" name="comments" aria-label="Other comments" placeholder="Anything else you would like Solon Foundation to know about the school"></textarea>
+    </section>
+
+    <div id="formError" class="banner"></div>
+    <button type="submit" class="btn primary" id="submitBtn">Submit</button>
+    <p class="small" style="text-align:center;margin-top:10px">If the connection fails, your answers stay on this page — just tap Submit again.</p>
+  </form>
+
+  <section class="card done" id="done" hidden>
+    <h2 style="justify-content:center">Thank you — submitted</h2>
+    <p>Your form for <strong id="doneSchool"></strong> has been received.</p>
+    <p>Reference: <span class="ref" id="doneRef"></span></p>
+    <button type="button" class="btn" id="another">Submit another school</button>
+  </section>
+
+  <template id="grantTpl">
+    <div class="grant">
+      <div class="grant-head"><strong class="gt"></strong><button type="button" class="link-btn rmg">Remove</button></div>
+      <div class="grid">
+        <div class="field"><label>Year *</label>
+          <input type="number" data-k="year" inputmode="numeric" min="1990" max="2100" step="1" required>
+          <div class="err">Enter a valid year.</div></div>
+        <div class="field full-sm" style="grid-column:span 2"><label>Project *</label>
+          <input type="text" data-k="project" required placeholder="e.g. Classroom block">
+          <div class="err">Enter the project.</div></div>
+        <div class="field" style="grid-column:1/-1"><label>Grant number <span class="opt">(if known)</span></label>
+          <input type="text" data-k="grantNumber"></div>
+        <div class="field full-sm cur-field" style="grid-column:1/-1"><label>Currency *</label>
+          <div class="radios">
+            <label><input type="radio" data-k="currency" value="ZMW" required> ZMW</label>
+            <label><input type="radio" data-k="currency" value="USD"> USD</label>
+          </div>
+          <div class="err">Choose the currency.</div></div>
+        <div class="field"><label>Grant amount *</label>
+          <input type="number" data-k="amount" inputmode="decimal" min="0" step="any" required>
+          <div class="err">Enter the amount.</div></div>
+        <div class="field" style="grid-column:span 2"><label>Parents' contribution <span class="opt">(est., if any)</span></label>
+          <input type="number" data-k="parentContribution" inputmode="decimal" min="0" step="any">
+          <div class="err">Enter a number.</div></div>
+      </div>
+    </div>
+  </template>
+</div>
+
+<script>
+/* ====== CONFIGURATION — paste your Apps Script web app URL here ====== */
+const CONFIG = {
+  SCRIPT_URL: "PASTE_YOUR_APPS_SCRIPT_WEB_APP_URL_HERE",
+  MAX_PHOTO_PX: 1600,       // longest side after resizing
+  PHOTO_QUALITY: 0.75       // JPEG quality 0–1
+};
+/* ===================================================================== */
+
+const $ = (s, el=document) => el.querySelector(s);
+const $$ = (s, el=document) => [...el.querySelectorAll(s)];
+const form = $("#form");
+const DRAFT_KEY = "solon-schools-zambia-draft-v1"; // different from the Malawi form so drafts never mix
+const photos = [null, null]; // {dataUrl, name}
+
+
+/* ---------- enrolment total ---------- */
+function updateTotal(){
+  const g = parseInt($("#girls").value, 10), b = parseInt($("#boys").value, 10);
+  $("#total").value = (isNaN(g) && isNaN(b)) ? "" : (g||0) + (b||0);
+}
+$("#girls").addEventListener("input", updateTotal);
+$("#boys").addEventListener("input", updateTotal);
+
+/* ---------- grants repeater ---------- */
+let grantSeq = 0;
+function renumberGrants(){
+  $$("#grants .grant").forEach((g, i, all) => {
+    $(".gt", g).textContent = "Grant " + String.fromCharCode(97 + (i % 26)) + (i >= 26 ? Math.floor(i/26) : "");
+    $(".rmg", g).hidden = all.length === 1;
+  });
+}
+function addGrant(values){
+  const node = $("#grantTpl").content.firstElementChild.cloneNode(true);
+  const group = "cur-" + (++grantSeq);
+  $$('input[type=radio]', node).forEach(r => r.name = group);
+  if (values) $$("[data-k]", node).forEach(inp => {
+    const v = values[inp.dataset.k];
+    if (v == null) return;
+    if (inp.type === "radio") inp.checked = inp.value === v; else inp.value = v;
+  });
+  $(".rmg", node).addEventListener("click", () => { node.remove(); renumberGrants(); saveDraft(); });
+  $("#grants").appendChild(node);
+  renumberGrants();
+  return node;
+}
+$("#addGrant").addEventListener("click", () => { const n = addGrant(); $("input", n).focus(); });
+
+function setAssistance(v){
+  const show = v === "Yes";
+  $("#grantsCard").hidden = !show;
+  if (show && !$("#grants .grant")) addGrant();
+}
+$$('input[name="assistance"]').forEach(r => r.addEventListener("change", e => setAssistance(e.target.value)));
+
+/* ---------- photos (resized in the browser) ---------- */
+function resizeImage(file){
+  return new Promise((resolve, reject) => {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const scale = Math.min(1, CONFIG.MAX_PHOTO_PX / Math.max(img.width, img.height));
+      const c = document.createElement("canvas");
+      c.width = Math.round(img.width * scale); c.height = Math.round(img.height * scale);
+      c.getContext("2d").drawImage(img, 0, 0, c.width, c.height);
+      URL.revokeObjectURL(url);
+      resolve(c.toDataURL("image/jpeg", CONFIG.PHOTO_QUALITY));
+    };
+    img.onerror = () => { URL.revokeObjectURL(url); reject(new Error("Could not read that image. Please try a different photo.")); };
+    img.src = url;
+  });
+}
+$$(".photo").forEach(box => {
+  const i = +box.dataset.i, input = $("input", box);
+  input.addEventListener("change", async () => {
+    const f = input.files[0]; if (!f) return;
+    $("span", box).textContent = "Processing…";
+    try {
+      const dataUrl = await resizeImage(f);
+      photos[i] = { dataUrl, name: `photo-${i+1}.jpg` };
+      let img = $("img", box); if (!img) { img = document.createElement("img"); box.prepend(img); }
+      img.src = dataUrl; img.alt = "Photo " + (i+1);
+      box.classList.add("has");
+      $("#photoField").classList.remove("invalid");
+    } catch (e) { alert(e.message); }
+    $("span", box).textContent = `Tap to add photo ${i+1} *`;
+    input.value = "";
+  });
+  $(".rm", box).addEventListener("click", e => {
+    e.stopPropagation(); photos[i] = null; $("img", box)?.remove(); box.classList.remove("has");
+  });
+});
+
+/* ---------- draft autosave (text fields only, not photos) ---------- */
+function collect(){
+  const f = new FormData(form);
+  const get = k => (f.get(k) || "").toString().trim();
+  const num = k => { const v = get(k); return v === "" ? null : Number(v); };
+  const assistance = get("assistance");
+  return {
+    schoolName: get("schoolName"), area: get("area"),
+    girls: num("girls"), boys: num("boys"),
+    total: (num("girls")||0) + (num("boys")||0),
+    teachers: num("teachers"), classrooms: num("classrooms"), houses: num("houses"),
+    assistance,
+    grants: assistance === "Yes" ? $$("#grants .grant").map(g => {
+      const o = {}; $$("[data-k]", g).forEach(inp => {
+        if (inp.type === "radio") { if (inp.checked) o[inp.dataset.k] = inp.value; else if (!(inp.dataset.k in o)) o[inp.dataset.k] = ""; return; }
+        const v = inp.value.trim();
+        o[inp.dataset.k] = inp.type === "number" ? (v === "" ? null : Number(v)) : v;
+      }); return o;
+    }) : [],
+    comments: get("comments"),
+    website: get("website")
+  };
+}
+let saveT;
+function saveDraft(){
+  clearTimeout(saveT);
+  saveT = setTimeout(() => { try { localStorage.setItem(DRAFT_KEY, JSON.stringify(collect())); } catch(e){} }, 300);
+}
+form.addEventListener("input", saveDraft);
+form.addEventListener("change", saveDraft);
+
+function restoreDraft(){
+  let d; try { d = JSON.parse(localStorage.getItem(DRAFT_KEY) || "null"); } catch(e) {}
+  if (!d) return;
+  const hasContent = ["schoolName","area","girls","boys"].some(k => d[k] != null && d[k] !== "");
+  if (!hasContent) return;
+  ["schoolName","area","girls","boys","teachers","classrooms","houses","comments"]
+    .forEach(k => { if (d[k] != null && form.elements[k]) form.elements[k].value = d[k]; });
+  updateTotal();
+  if (d.assistance) {
+    const r = $(`input[name="assistance"][value="${d.assistance}"]`); if (r) r.checked = true;
+    if (d.assistance === "Yes") { $("#grantsCard").hidden = false; (d.grants && d.grants.length ? d.grants : [null]).forEach(g => addGrant(g)); }
+  }
+  $("#draftBanner").hidden = false;
+}
+function clearDraft(){ try { localStorage.removeItem(DRAFT_KEY); } catch(e){} }
+$("#clearDraft").addEventListener("click", () => { clearDraft(); location.reload(); });
+
+/* ---------- validation ---------- */
+function validate(){
+  let firstBad = null;
+  const mark = (fieldEl, ok) => { fieldEl.classList.toggle("invalid", !ok); if (!ok && !firstBad) firstBad = fieldEl; };
+  $$(".field", form).forEach(field => {
+    if (field.closest("[hidden]")) { field.classList.remove("invalid"); return; }
+    if (field.id === "photoField") { mark(field, !!(photos[0] && photos[1])); return; }
+    const radios = $$("input[type=radio]", field);
+    if (radios.length) { mark(field, radios.some(r => r.checked)); return; }
+    const inp = $("input:not([type=file]):not([readonly]), select", field);
+    if (!inp) { field.classList.remove("invalid"); return; }
+    const v = inp.value.trim();
+    let ok = true;
+    if (inp.required && !v) ok = false;
+    if (ok && v && inp.type === "number") {
+      const n = Number(v);
+      ok = Number.isFinite(n) && n >= Number(inp.min || -Infinity) && n <= Number(inp.max || Infinity) &&
+           (inp.step === "any" || Number.isInteger(n));
+    }
+    mark(field, ok);
+  });
+  if (firstBad) { firstBad.scrollIntoView({ behavior: "smooth", block: "center" }); $("input,select", firstBad)?.focus({ preventScroll: true }); }
+  return !firstBad;
+}
+form.addEventListener("input", e => e.target.closest(".field")?.classList.remove("invalid"));
+form.addEventListener("change", e => e.target.closest(".field")?.classList.remove("invalid"));
+
+/* ---------- submit ---------- */
+function newId(){
+  const d = new Date(), p = n => String(n).padStart(2, "0");
+  const chars = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+  const rnd = [...crypto.getRandomValues(new Uint8Array(6))].map(b => chars[b % chars.length]).join("");
+  return `ZM-${d.getFullYear()}${p(d.getMonth()+1)}${p(d.getDate())}-${rnd}`;
+}
+let submissionId = null; // kept across retries so a resend is not duplicated
+
+form.addEventListener("submit", async e => {
+  e.preventDefault();
+  const errBox = $("#formError"); errBox.className = "banner"; errBox.textContent = "";
+  if (!validate()) { errBox.className = "banner error"; errBox.textContent = "Some answers are missing or need checking — see the fields marked in red."; return; }
+  if (CONFIG.SCRIPT_URL.startsWith("PASTE_")) { errBox.className = "banner error"; errBox.textContent = "This form is not connected yet: the Apps Script URL has not been set in index.html."; return; }
+
+  submissionId = submissionId || newId();
+  const payload = { ...collect(), submissionId, submittedFrom: location.href,
+    photos: photos.map(p => ({ name: p.name, data: p.dataUrl.split(",")[1] })) };
+
+  const btn = $("#submitBtn"); btn.disabled = true; btn.textContent = "Sending… please wait";
+  const ctrl = new AbortController(); const t = setTimeout(() => ctrl.abort(), 120000);
+  try {
+    const res = await fetch(CONFIG.SCRIPT_URL, {
+      method: "POST", redirect: "follow", signal: ctrl.signal,
+      headers: { "Content-Type": "text/plain;charset=utf-8" }, // avoids CORS preflight
+      body: JSON.stringify(payload)
+    });
+    const out = await res.json();
+    if (!out.ok) throw new Error(out.error || "The server could not save the form.");
+    clearDraft();
+    $("#doneSchool").textContent = payload.schoolName;
+    $("#doneRef").textContent = out.id || submissionId;
+    form.hidden = true; $("#draftBanner").hidden = true; $("#done").hidden = false;
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  } catch (err) {
+    errBox.className = "banner error";
+    errBox.textContent = (err.name === "AbortError" || err instanceof TypeError)
+      ? "Could not reach the server — please check your internet connection and tap Submit again. Your answers are still here."
+      : "Sorry, something went wrong: " + err.message + " Please tap Submit again.";
+  } finally {
+    clearTimeout(t); btn.disabled = false; btn.textContent = "Submit";
+  }
+});
+
+$("#another").addEventListener("click", () => { clearDraft(); location.reload(); });
+
+restoreDraft();
+</script>
+</body>
+</html>
